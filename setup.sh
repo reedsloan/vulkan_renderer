@@ -15,7 +15,9 @@ warn()  { echo -e "${YELLOW}[!]${NC} $*"; }
 error() { echo -e "${RED}[✗]${NC} $*"; exit 1; }
 
 # ── Require macOS ──────────────────────────────────────────────────────────
-[[ "$(uname)" == "Darwin" ]] || error "This script is for macOS only."
+if [[ "$(uname)" != "Darwin" ]]; then
+    error "This script is for macOS only. On Windows, run:  powershell -ExecutionPolicy Bypass -File setup.ps1"
+fi
 
 # ── Require Homebrew ───────────────────────────────────────────────────────
 if ! command -v brew &>/dev/null; then

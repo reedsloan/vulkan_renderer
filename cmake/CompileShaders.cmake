@@ -17,14 +17,33 @@ function(compile_shaders)
         message(FATAL_ERROR "compile_shaders: TARGET is required")
     endif()
 
+    # ── Build a list of hint directories per platform ──────────────────────
+    set(_SHADER_HINTS "$ENV{VULKAN_SDK}/bin")
+
+    if(APPLE AND HOMEBREW_PREFIX)
+        list(APPEND _SHADER_HINTS "${HOMEBREW_PREFIX}/bin")
+    endif()
+
+    if(WIN32)
+        # LunarG SDK keeps tools in Bin/ (and Bin32/ for 32-bit)
+        list(APPEND _SHADER_HINTS "$ENV{VULKAN_SDK}/Bin")
+        # Also check common default install if VULKAN_SDK is unset
+        file(GLOB _VK_BIN_DIRS "C:/VulkanSDK/*/Bin")
+        if(_VK_BIN_DIRS)
+            list(SORT _VK_BIN_DIRS)
+            list(GET _VK_BIN_DIRS -1 _VK_BIN_LATEST)
+            list(APPEND _SHADER_HINTS "${_VK_BIN_LATEST}")
+        endif()
+    endif()
+
     # ── Try glslc first ────────────────────────────────────────────────────
     find_program(GLSLC_EXECUTABLE glslc
-        HINTS "$ENV{VULKAN_SDK}/bin" "${HOMEBREW_PREFIX}/bin"
+        HINTS ${_SHADER_HINTS}
     )
 
     # ── Fall back to glslangValidator ──────────────────────────────────────
     find_program(GLSLANG_VALIDATOR_EXECUTABLE glslangValidator
-        HINTS "$ENV{VULKAN_SDK}/bin" "${HOMEBREW_PREFIX}/bin"
+        HINTS ${_SHADER_HINTS}
     )
 
     if(GLSLC_EXECUTABLE)
@@ -34,13 +53,27 @@ function(compile_shaders)
         set(SHADER_COMPILER "glslangValidator")
         message(STATUS "Shader compiler: glslangValidator (${GLSLANG_VALIDATOR_EXECUTABLE})")
     else()
-        message(FATAL_ERROR
-            "No GLSL → SPIR-V compiler found.\n"
-            "  Install one of:\n"
-            "    brew install shaderc          # provides glslc (recommended)\n"
-            "    brew install glslang          # provides glslangValidator\n"
-            "    brew install vulkan-tools     # also provides glslangValidator"
-        )
+        if(APPLE)
+            message(FATAL_ERROR
+                "No GLSL -> SPIR-V compiler found.\n"
+                "  Install one of:\n"
+                "    brew install shaderc          # provides glslc (recommended)\n"
+                "    brew install glslang          # provides glslangValidator\n"
+                "    brew install vulkan-tools     # also provides glslangValidator"
+            )
+        elseif(WIN32)
+            message(FATAL_ERROR
+                "No GLSL -> SPIR-V compiler found.\n"
+                "  glslc ships with the LunarG Vulkan SDK.\n"
+                "  Download it from: https://vulkan.lunarg.com/sdk/home\n"
+                "  Make sure VULKAN_SDK is set or the SDK is in C:\\VulkanSDK\\."
+            )
+        else()
+            message(FATAL_ERROR
+                "No GLSL -> SPIR-V compiler found.\n"
+                "  Install the Vulkan SDK or the shaderc / glslang package for your distro."
+            )
+        endif()
     endif()
 
     set(SPIRV_OUTPUTS "")
@@ -59,7 +92,7 @@ function(compile_shaders)
                         -o ${SPIRV_OUT}
                         ${SHADER_SRC}
                 DEPENDS ${SHADER_SRC}
-                COMMENT "Compiling shader ${SHADER_NAME} → SPIR-V (glslc)"
+                COMMENT "Compiling shader ${SHADER_NAME} -> SPIR-V (glslc)"
                 VERBATIM
             )
         else()
@@ -72,7 +105,7 @@ function(compile_shaders)
                         -o ${SPIRV_OUT}
                         ${SHADER_SRC}
                 DEPENDS ${SHADER_SRC}
-                COMMENT "Compiling shader ${SHADER_NAME} → SPIR-V (glslangValidator)"
+                COMMENT "Compiling shader ${SHADER_NAME} -> SPIR-V (glslangValidator)"
                 VERBATIM
             )
         endif()

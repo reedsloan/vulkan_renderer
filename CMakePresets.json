@@ -19,6 +19,36 @@
         "CMAKE_BUILD_TYPE": "Release",
         "ENABLE_VALIDATION_LAYERS": "OFF"
       }
+    },
+    {
+      "name": "win-debug",
+      "displayName": "Windows Debug (Visual Studio)",
+      "description": "Debug build using the default Visual Studio generator on Windows",
+      "binaryDir": "${sourceDir}/build/win-debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_VALIDATION_LAYERS": "ON"
+      }
+    },
+    {
+      "name": "win-release",
+      "displayName": "Windows Release (Visual Studio)",
+      "description": "Release build using the default Visual Studio generator on Windows",
+      "binaryDir": "${sourceDir}/build/win-release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_VALIDATION_LAYERS": "OFF"
+      }
     }
   ],
   "buildPresets": [
@@ -29,6 +59,16 @@
     {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "win-debug",
+      "configurePreset": "win-debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "win-release",
+      "configurePreset": "win-release",
+      "configuration": "Release"
     }
   ]
 }

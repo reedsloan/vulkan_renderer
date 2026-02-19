@@ -1,5 +1,6 @@
 // 1. Standard C++ Libraries
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -71,8 +72,10 @@ static std::vector<const char *> getRequiredExtensions() {
 
     std::vector<const char *> extensions(glfwExts, glfwExts + glfwExtCount);
 
-    // MoltenVK portability
+#ifdef __APPLE__
+    // MoltenVK portability — only needed on macOS (Vulkan via Metal translation)
     extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
 
     if (gValidationEnabled) {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -165,8 +168,15 @@ private:
             gValidationEnabled = false;
             std::cerr << "[Warn] Validation layers requested but not available. "
                     "Continuing without validation.\n"
+#ifdef __APPLE__
                     "       Install them: brew install vulkan-validationlayers\n"
-                    "       Then set:     export VK_LAYER_PATH=\"$(brew --prefix)/share/vulkan/explicit_layer.d\"\n";
+                    "       Then set:     export VK_LAYER_PATH=\"$(brew --prefix)/share/vulkan/explicit_layer.d\"\n"
+#elif defined(_WIN32)
+                    "       Install them via the LunarG Vulkan SDK: https://vulkan.lunarg.com/sdk/home\n"
+#else
+                    "       Install the vulkan-validationlayers package for your platform.\n"
+#endif
+                    ;
         }
 #else
         gValidationEnabled = false;
@@ -187,7 +197,9 @@ private:
         createInfo.pApplicationInfo = &appInfo;
         createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
+#ifdef __APPLE__
         createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
 
         // Debug messenger for instance creation/destruction
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
