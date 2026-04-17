@@ -154,7 +154,15 @@ add_executable(${PROJECT_NAME} ${APP_SOURCES}
         src/lve_window.cpp
         src/lve_window.hpp
         src/first_app.cpp
-        src/first_app.hpp)
+        src/first_app.hpp
+        src/lve_pipeline.cpp
+        src/lve_pipeline.hpp
+        src/lve_device.cpp
+        src/lve_device.hpp
+        src/lve_swap_chain.cpp
+        src/lve_model.cpp
+        src/lve_model.hpp
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src

@@ -12,18 +12,29 @@ namespace lve {
     class LveWindow {
     public:
         LveWindow(int w, int h, const std::string &name);
+
         ~LveWindow();
 
         // Returns true if the window has been instructed to close
         bool shouldClose() const;
 
+        VkExtent2D getExtent() { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+
+        bool wasWindowResized() { return framebufferResized; }
+        void resetWindowResizedFlag() { framebufferResized = false; }
+
         // delete copy constructor to prevent dangling ptr of GLFWwindow (RAII)
         LveWindow(const LveWindow &) = delete;
 
+        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+
     private:
+        static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
         void initWindow();
 
-        const int width, height;
+        int width, height;
+        bool framebufferResized = false;
+
         std::string windowName;
         GLFWwindow *window;
     };

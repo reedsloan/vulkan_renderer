@@ -3,6 +3,7 @@
 //
 
 #include "lve_window.hpp"
+#include <stdexcept>
 
 namespace lve {
     LveWindow::LveWindow(int w, int h, const std::string &name) : width(w), height(h), windowName(name) {
@@ -19,16 +20,29 @@ namespace lve {
         return glfwWindowShouldClose(window);
     }
 
+    void LveWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR*surface) {
+        if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create window surface!");
+        }
+    }
+
+    void LveWindow::framebufferResizeCallback(GLFWwindow *window, int width, int height) {
+        auto lveWindow = reinterpret_cast<LveWindow*>(glfwGetWindowUserPointer(window));
+        lveWindow->framebufferResized = true;
+        lveWindow->height = height;
+        lveWindow->width = width;
+    }
+
     void LveWindow::initWindow() {
          // initialize GLFW library by calling glfwinit
         glfwInit();
         // use the window hint command to tell glfw to not create an opengl context
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        // use another hint to disable our window from being resized after creation
-        // (we need to handle this a special way, covered around tutorial 10)
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         // use the create window command to initialize our window pointer
         window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+        glfwSetWindowUserPointer(window, this); 
+        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     }
 }

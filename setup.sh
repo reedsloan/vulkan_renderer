@@ -77,9 +77,9 @@ echo ""
 echo "── Environment Variables ─────────────────────────────────────"
 echo "Add these to your shell profile (~/.zshrc):"
 echo ""
-echo "  export VULKAN_SDK=\"${BREW_PREFIX}/share/vulkan\""
-echo "  export VK_ICD_FILENAMES=\"${BREW_PREFIX}/share/vulkan/icd.d/MoltenVK_icd.json\""
-echo "  export VK_LAYER_PATH=\"${BREW_PREFIX}/share/vulkan/explicit_layer.d\""
+echo "  export VULKAN_SDK=\"${BREW_PREFIX}/etc/vulkan\""
+echo "  export VK_ICD_FILENAMES=\"${BREW_PREFIX}/etc/vulkan/icd.d/MoltenVK_icd.json\""
+echo "  export VK_LAYER_PATH=\"${BREW_PREFIX}/etc/vulkan/explicit_layer.d\""
 echo ""
 echo "VK_LAYER_PATH is REQUIRED for validation layers to work."
 echo "VK_ICD_FILENAMES is REQUIRED for MoltenVK to be found by the loader."
@@ -87,9 +87,9 @@ echo ""
 
 # ── Auto-apply to current shell (offer to persist) ──────────────────────
 echo "── Applying to current shell ─────────────────────────────────"
-export VULKAN_SDK="${BREW_PREFIX}/share/vulkan"
-export VK_ICD_FILENAMES="${BREW_PREFIX}/share/vulkan/icd.d/MoltenVK_icd.json"
-export VK_LAYER_PATH="${BREW_PREFIX}/share/vulkan/explicit_layer.d"
+export VULKAN_SDK="${BREW_PREFIX}/etc/vulkan"
+export VK_ICD_FILENAMES="${BREW_PREFIX}/etc/vulkan/icd.d/MoltenVK_icd.json"
+export VK_LAYER_PATH="${BREW_PREFIX}/etc/vulkan/explicit_layer.d"
 info "Environment variables set for this shell session"
 echo ""
 
@@ -102,9 +102,9 @@ else
         cat >> ~/.zshrc << ZSHEOF
 
 # Vulkan SDK (Homebrew / MoltenVK)
-export VULKAN_SDK="${BREW_PREFIX}/share/vulkan"
-export VK_ICD_FILENAMES="${BREW_PREFIX}/share/vulkan/icd.d/MoltenVK_icd.json"
-export VK_LAYER_PATH="${BREW_PREFIX}/share/vulkan/explicit_layer.d"
+export VULKAN_SDK="${BREW_PREFIX}/etc/vulkan"
+export VK_ICD_FILENAMES="${BREW_PREFIX}/etc/vulkan/icd.d/MoltenVK_icd.json"
+export VK_LAYER_PATH="${BREW_PREFIX}/etc/vulkan/explicit_layer.d"
 ZSHEOF
         info "Added to ~/.zshrc — restart your terminal or run: source ~/.zshrc"
     else
